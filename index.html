@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JS HW-01 — String Formatting</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 540px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #1a1a1a;
+        line-height: 1.5;
+      }
+
+      h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+      }
+
+      section + section {
+        border-top: 1px solid #ddd;
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+      }
+
+      .fields {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.5rem 0.75rem;
+        align-items: baseline;
+      }
+
+      label {
+        font-size: 0.875rem;
+        color: #555;
+        text-align: right;
+      }
+
+      input {
+        font: inherit;
+        font-size: 0.875rem;
+        padding: 0.3rem 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+      }
+
+      input:focus {
+        outline: 2px solid #4a90d9;
+        outline-offset: -1px;
+        border-color: #4a90d9;
+      }
+
+      .result {
+        margin-top: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        background: #f5f7f9;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        min-height: 2rem;
+        font-family: 'SF Mono', ui-monospace, monospace;
+      }
+
+      .result.error {
+        color: #b91c1c;
+        background: #fef2f2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>JS HW-01 — String Formatting</h1>
+
+    <section>
+      <h2>Task 1 — makeTransaction</h2>
+      <div class="fields">
+        <label for="t1-quantity">Quantity</label>
+        <input id="t1-quantity" type="number" min="0" placeholder="5" />
+        <label for="t1-price">Price per droid</label>
+        <input id="t1-price" type="number" min="0" placeholder="3000" />
+      </div>
+      <div class="result" id="t1-result"></div>
+    </section>
+
+    <section>
+      <h2>Task 2 — getShippingMessage</h2>
+      <div class="fields">
+        <label for="t2-country">Country</label>
+        <input id="t2-country" type="text" placeholder="Australia" />
+        <label for="t2-price">Price</label>
+        <input id="t2-price" type="number" min="0" placeholder="120" />
+        <label for="t2-delivery">Delivery fee</label>
+        <input id="t2-delivery" type="number" min="0" placeholder="50" />
+      </div>
+      <div class="result" id="t2-result"></div>
+    </section>
+
+    <section>
+      <h2>Task 3 — getElementWidth</h2>
+      <div class="fields">
+        <label for="t3-content">Content</label>
+        <input id="t3-content" type="text" placeholder="50px" />
+        <label for="t3-padding">Padding</label>
+        <input id="t3-padding" type="text" placeholder="8px" />
+        <label for="t3-border">Border</label>
+        <input id="t3-border" type="text" placeholder="4px" />
+      </div>
+      <div class="result" id="t3-result"></div>
+    </section>
+
+    <script type="module">
+      import { makeTransaction } from './js/task-1.js';
+      import { getShippingMessage } from './js/task-2.js';
+      import { getElementWidth } from './js/task-3.js';
+
+      function showResult(el, text, isError = false) {
+        el.textContent = text;
+        el.classList.toggle('error', isError);
+      }
+
+      // --- Task 1 ---
+      const t1q = document.getElementById('t1-quantity');
+      const t1p = document.getElementById('t1-price');
+      const t1r = document.getElementById('t1-result');
+
+      function updateTask1() {
+        const raw1 = t1q.value.trim();
+        const raw2 = t1p.value.trim();
+
+        if (!raw1 || !raw2) {
+          showResult(t1r, 'Fill in both fields.', true);
+          return;
+        }
+
+        const quantity = Number(raw1);
+        const price = Number(raw2);
+
+        if (isNaN(quantity) || isNaN(price)) {
+          showResult(t1r, 'Values must be valid numbers.', true);
+          return;
+        }
+
+        showResult(t1r, makeTransaction(quantity, price));
+      }
+
+      t1q.addEventListener('input', updateTask1);
+      t1p.addEventListener('input', updateTask1);
+      updateTask1();
+
+      // --- Task 2 ---
+      const t2c = document.getElementById('t2-country');
+      const t2p = document.getElementById('t2-price');
+      const t2d = document.getElementById('t2-delivery');
+      const t2r = document.getElementById('t2-result');
+
+      function updateTask2() {
+        const country = t2c.value.trim();
+        const rawPrice = t2p.value.trim();
+        const rawFee = t2d.value.trim();
+
+        if (!country || !rawPrice || !rawFee) {
+          showResult(t2r, 'Fill in all fields.', true);
+          return;
+        }
+
+        const price = Number(rawPrice);
+        const fee = Number(rawFee);
+
+        if (isNaN(price) || isNaN(fee)) {
+          showResult(t2r, 'Price and delivery fee must be valid numbers.', true);
+          return;
+        }
+
+        showResult(t2r, getShippingMessage(country, price, fee));
+      }
+
+      t2c.addEventListener('input', updateTask2);
+      t2p.addEventListener('input', updateTask2);
+      t2d.addEventListener('input', updateTask2);
+      updateTask2();
+
+      // --- Task 3 ---
+      const t3c = document.getElementById('t3-content');
+      const t3p = document.getElementById('t3-padding');
+      const t3b = document.getElementById('t3-border');
+      const t3r = document.getElementById('t3-result');
+
+      const pxPattern = /^\d+(\.\d+)?px$/;
+
+      function updateTask3() {
+        const content = t3c.value.trim();
+        const padding = t3p.value.trim();
+        const border = t3b.value.trim();
+
+        if (!content || !padding || !border) {
+          showResult(t3r, 'Fill in all fields.', true);
+          return;
+        }
+
+        if (!pxPattern.test(content) || !pxPattern.test(padding) || !pxPattern.test(border)) {
+          showResult(t3r, 'Values must be in "Npx" format (e.g. 50px, 8.5px).', true);
+          return;
+        }
+
+        showResult(t3r, `${getElementWidth(content, padding, border)}px`);
+      }
+
+      t3c.addEventListener('input', updateTask3);
+      t3p.addEventListener('input', updateTask3);
+      t3b.addEventListener('input', updateTask3);
+      updateTask3();
+    </script>
+  </body>
+</html>
